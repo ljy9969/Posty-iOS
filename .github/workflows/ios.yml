@@ -13,7 +13,8 @@ on:
 
 jobs:
   ios:
-    runs-on: macos-14
+    # macos-15 = Xcode 16 기본(XcodeGen 이 만드는 최신 프로젝트 포맷 77 을 읽을 수 있음).
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
 
