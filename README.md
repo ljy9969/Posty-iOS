@@ -1,4 +1,4 @@
-# Posty — iOS (Compose Multiplatform)
+# Posty (Compose Multiplatform)
 
 Posty가 **Compose Multiplatform**로 전환되어 Android와 iOS가 **하나의 UI/로직 코드**를 공유합니다.
 
