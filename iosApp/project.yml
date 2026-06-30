@@ -26,6 +26,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.bimatrix.posty
         SWIFT_VERSION: "5.0"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_ENTITLEMENTS: iosApp/iosApp.entitlements
         # KMP 프레임워크가 복사되는 위치(embedAndSignAppleFrameworkForXcode 출력).
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
@@ -34,9 +35,30 @@ targets:
           - $(inherited)
           - -framework
           - Shared
+    dependencies:
+      - target: PostyWidget
+        embed: true
     preBuildScripts:
       - name: Compile & embed Kotlin (Compose) framework
         basedOnDependencyAnalysis: false
         script: |
           cd "$SRCROOT/.."
           ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+
+  # 홈 화면 위젯(WidgetKit). App Group 공유 UserDefaults 로 앱과 데이터 공유.
+  PostyWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: PostyWidget
+    info:
+      path: PostyWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Posty
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.bimatrix.posty.widget
+        SWIFT_VERSION: "5.0"
+        CODE_SIGN_ENTITLEMENTS: PostyWidget/PostyWidget.entitlements

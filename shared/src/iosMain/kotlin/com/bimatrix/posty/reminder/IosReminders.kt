@@ -69,6 +69,7 @@ class IosReminders : TaskSideEffects {
     }
 
     override fun onTasksChanged(tasks: List<Task>) {
-        // iOS 위젯(WidgetKit)은 별도 구현 — 여기서는 처리 없음.
+        // 위젯 새로고침은 Swift(앱 백그라운드 전환 시 WidgetCenter)에서 처리한다.
+        // (Kotlin/Native 공용 메타데이터에 WidgetKit 바인딩이 없어 Swift 쪽에서 호출)
     }
 }
