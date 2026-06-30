@@ -64,7 +64,8 @@ Xcode 빌드 시 `project.yml`의 pre-build 스크립트가 자동으로
 - ✅ 로컬 저장(NSUserDefaults, App Group suite)
 - ✅ **마감 알림**(`UNUserNotificationCenter`) — 마감일 당일 로컬 오전 9시
 - ✅ **앱 아이콘 + 런치 배경(크림)**
-- ✅ **홈 위젯**(WidgetKit) — 우선순위 최상위 할 일 + 마감 D-day + "외 N장 더"
+- ✅ **홈 위젯**(WidgetKit) — small/medium(최상위 할 일 + D-day), **large(여러 장 리스트)**
+- ✅ **화면 내 뒤로가기** — 좌측 가장자리 스와이프(Compose `BackHandler`)
 
 ## CI(macOS) 검증 완료
 
@@ -91,8 +92,42 @@ CI 는 서명 없이 '빌드 검증'만 합니다. 실기기 설치는 Mac/Xcode
 3. 두 타깃에 **App Groups** 켜고 동일 그룹 ID 지정.
 4. 기기 연결 후 Run.
 
+## iOS 배포 — 아이폰 사용자에게 전달하기
+
+iOS 는 Android 처럼 **"파일(APK) 하나 보내서 설치"가 안 됩니다.** 애플 정책상 서명·배포 경로를
+거쳐야 하므로, 아이폰 사용자에게 전달하는 방법은 사실상 아래 중 하나입니다.
+
+| 방법 | 사용자가 받는 것 | 필요 조건 | 추천 상황 |
+|---|---|---|---|
+| **TestFlight** (추천) | 초대 이메일 또는 **공개 링크** → TestFlight 앱에서 탭 설치 | Apple Developer Program($99/년) | 지인·베타 테스터에게 지금 나눠주기 |
+| **App Store** | App Store 에서 검색/다운로드 | $99/년 + 심사 통과 | 정식 출시 |
+| **Ad Hoc (.ipa)** | 서명된 `.ipa` 파일 | $99/년 + 기기 **UDID 사전 등록**(연 100대) | 소수 특정 기기에만 |
+| 개발 빌드(케이블) | 없음(직접 연결) | Mac + Xcode | 내 손에 있는 기기 테스트용 |
+
+대부분의 현실적인 답은 **TestFlight** 입니다. 아이폰 사용자는:
+1. App Store 에서 무료 **TestFlight** 앱 설치
+2. 보내준 **공개 링크**(또는 초대 메일) 탭 → "설치" → 끝
+   (외부 테스터 최대 1만 명, 빌드는 90일 유효, 심사는 App Store 보다 가벼움)
+
+### 전달하려면 갖춰야 할 것
+
+1. **Apple Developer Program 가입**($99/년) — 없으면 본인 기기 외엔 어떤 방법도 불가.
+2. **서명 + 아카이브 + 업로드** — 현재 CI 는 `CODE_SIGNING_ALLOWED=NO` 로 *빌드 검증만* 합니다
+   (배포용 `.ipa` 를 만들지 않음). 배포하려면 서명 인증서/프로비저닝 +
+   `xcodebuild archive` → App Store Connect 업로드가 추가로 필요.
+3. (위젯/알림 유지) App Group `group.com.bimatrix.posty` 와 번들 ID `com.bimatrix.posty` 를
+   본인 팀 계정에 등록.
+
+### TestFlight 까지 자동화하려면
+
+`fastlane`(또는 GitHub Actions)에 다음을 구성하면 푸시 시 자동 업로드됩니다.
+- `fastlane match` 로 서명 인증서/프로파일 관리
+- `gym`(xcodebuild archive)으로 `.ipa` 생성
+- `pilot`(App Store Connect API key)로 TestFlight 업로드
+
+→ 그러면 사용자에겐 **TestFlight 공개 링크 하나만** 전달하면 됩니다.
+
 ## 남은 선택 작업
 
-- 실기기 배포 자동화(서명 인증서/프로파일 → fastlane match, TestFlight 업로드)
-- 위젯 systemLarge 패밀리/여러 카드 표시
-- iOS 화면 내 뒤로가기(현재 시스템 스와이프에 의존)
+- 실기기 배포 자동화(서명 인증서/프로파일 → fastlane match → TestFlight 업로드)
+- 위젯 폰 잠금화면/standBy 등 추가 패밀리, iOS 알림 액션
