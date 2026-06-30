@@ -34,10 +34,14 @@ private class PostyRemoteViewsFactory(
     override fun onCreate() {}
 
     override fun onDataSetChanged() {
-        items = runBlocking {
-            TaskRepository(AndroidPostyStore(context)).tasks.first()
-                .filter { !it.isCompleted }
-                .sortedWith(compareByDescending<Task> { it.pinned }.thenBy { it.order })
+        items = try {
+            runBlocking {
+                TaskRepository(AndroidPostyStore(context)).tasks.first()
+                    .filter { !it.isCompleted }
+                    .sortedWith(compareByDescending<Task> { it.pinned }.thenBy { it.order })
+            }
+        } catch (_: Throwable) {
+            emptyList()
         }
     }
 

@@ -8,12 +8,14 @@
     android:paddingTop="5dp"
     android:paddingBottom="5dp">
 
-    <!-- 스티키 색 막대(colorIndex 에 따라 배경색 지정) -->
-    <View
+    <!-- 스티키 색 막대(colorIndex 에 따라 배경색 지정).
+         RemoteViews 는 bare View 인플레이트를 막으므로 ImageView 사용. -->
+    <ImageView
         android:id="@+id/widget_item_dot"
         android:layout_width="5dp"
         android:layout_height="30dp"
         android:layout_marginEnd="8dp"
+        android:contentDescription="@null"
         android:background="#C7F0DB" />
 
     <LinearLayout
