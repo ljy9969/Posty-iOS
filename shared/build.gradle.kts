@@ -31,8 +31,8 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
-            // material-icons-extended 는 1.7.3 이 마지막 멀티플랫폼 발행본(iOS 포함).
-            // CMP 1.11 런타임과 함께 써도 ImageVector API 가 안정적이라 호환된다.
+            // 머티리얼 아이콘은 1.7.3 이 마지막 멀티플랫폼 발행본(iOS klib 포함).
+            // 구버전 klib(ABI 낮음)이라 더 높은 Kotlin 컴파일러가 하위호환으로 읽는다.
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
